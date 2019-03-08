@@ -50,7 +50,7 @@ int main()
 	}
 
 	/* prepare input tensor */
-	TF_Output input_op = { TF_GraphOperationByName(graph, "input_2_7"), 0 };
+	TF_Output input_op = { TF_GraphOperationByName(graph, "input_1"), 0 };
 	if (input_op.oper == nullptr) {
 		std::cout << "Can't init input_op" << std::endl;
 		return 2;
@@ -65,7 +65,7 @@ int main()
 		input_vals.data(), input_vals.size() * sizeof(float));
 
 	/* prepare output tensor */
-	TF_Output out_op = { TF_GraphOperationByName(graph, "dense_1_7/Softmax"), 0 };
+	TF_Output out_op = { TF_GraphOperationByName(graph, "dense_1/Softmax"), 0 };
 	if (out_op.oper == nullptr) {
 		std::cout << "Can't init out_op" << std::endl;
 		return 3;

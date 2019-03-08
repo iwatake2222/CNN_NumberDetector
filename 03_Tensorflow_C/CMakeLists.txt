@@ -3,7 +3,7 @@ project(NumberDetector)
 
 
 # Create Main project
-add_executable(Main
+add_executable(NumberDetector
 	main.cpp
 	tf_utils.cpp
 	tf_utils.hpp
