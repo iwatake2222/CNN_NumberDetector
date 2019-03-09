@@ -1,3 +1,6 @@
 [submodule "05_TensorflowLite_C/external_libs/tensorflow"]
 	path = 05_TensorflowLite_CPP/external_libs/tensorflow
 	url = https://github.com/tensorflow/tensorflow
+[submodule "06_TensorflowLite_rpi/external_libs/tensorflow"]
+	path = 06_TensorflowLite_rpi/external_libs/tensorflow
+	url = https://github.com/tensorflow/tensorflow
