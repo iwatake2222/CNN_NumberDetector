@@ -1,0 +1,7 @@
+tflite_convert ^
+  --output_file=conv_mnist.tflite --keras_model_file=conv_mnist.h5 ^
+  --inference_type=QUANTIZED_UINT8 ^
+  --default_ranges_min=0 ^
+  --default_ranges_max=255 ^
+  --mean_values=128 ^
+  --std_dev_values=127
