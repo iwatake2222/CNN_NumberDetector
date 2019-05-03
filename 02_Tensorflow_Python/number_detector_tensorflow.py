@@ -14,13 +14,14 @@ if __name__ == '__main__':
 	img = img / 255.
 
 	with tf.Session() as sess:
+		sess.run(tf.global_variables_initializer())
 		with tf.gfile.GFile('conv_mnist.pb', 'rb') as f:
 			graph_def = tf.GraphDef()
 			graph_def.ParseFromString(f.read())
 			sess.graph.as_default()
 			_ = tf.import_graph_def(graph_def)
 			tensor_input = sess.graph.get_tensor_by_name('import/input_1:0')
-			tensor_output = sess.graph.get_tensor_by_name('import/dense_1/Softmax:0')
+			tensor_output = sess.graph.get_tensor_by_name('import/dense/Softmax:0')
 			probs = sess.run(tensor_output, {tensor_input: img})
 
 	result = np.argmax(probs[0])
