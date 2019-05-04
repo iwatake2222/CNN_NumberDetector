@@ -6,6 +6,7 @@ input_keras_model = './conv_mnist.h5'
 export_dir = './conv_mnist_pb'
 
 if __name__ == '__main__':
+	old_session = tf.keras.backend.get_session()
 	sess = tf.Session()
 	sess.run(tf.global_variables_initializer())
 	tf.keras.backend.set_session(sess)
@@ -18,6 +19,7 @@ if __name__ == '__main__':
 									  signature_def_map={'predict': signature})
 	builder.save(as_text=True)
 	sess.close()
+	tf.keras.backend.set_session(old_session)
 	
 	print('output_node_names:')
 	for t in model.inputs:
