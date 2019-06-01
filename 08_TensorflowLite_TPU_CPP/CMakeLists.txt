@@ -66,6 +66,3 @@ target_include_directories(NumberDetector PUBLIC ${CMAKE_SOURCE_DIR}/external_li
 # target_include_directories(NumberDetector PUBLIC ${CMAKE_SOURCE_DIR}/external_libs/edgetpu-native/tensorflow/tensorflow/lite/tools/make/downloads/farmhash/src)
 target_include_directories(NumberDetector PUBLIC ${CMAKE_SOURCE_DIR}/external_libs/edgetpu-native/tensorflow/tensorflow/lite/tools/make/downloads/flatbuffers/include)
 
-# Copy resouce
-file(COPY ${CMAKE_SOURCE_DIR}/resource/ DESTINATION ${PROJECT_BINARY_DIR}/resource/)
-add_definitions(-DRESOURCE_DIR="${PROJECT_BINARY_DIR}/resource/")
