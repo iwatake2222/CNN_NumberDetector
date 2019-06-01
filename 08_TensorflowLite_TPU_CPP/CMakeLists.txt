@@ -3,7 +3,6 @@ project(NumberDetector)
 
 # Switch build target
 set(BUILD_TARGET PC CACHE STRING "Build target?")
-set(LINK_ONLY OFF CACHE BOOL "Use pre-built library?")
 
 # Common build settings
 include(cmakes/common.cmake)
@@ -16,6 +15,9 @@ if(${BUILD_TARGET} STREQUAL PC)
 		message("[BUILD] PC Linux")
 		include(cmakes/PC_LINUX.cmake)
 	endif()
+elseif(${BUILD_TARGET} STREQUAL JETSON_NATIVE)
+	message("[BUILD] Jetson Native")
+	include(cmakes/JETSON_NATIVE.cmake)
 elseif(${BUILD_TARGET} STREQUAL RASPI_NATIVE)
 	message("[BUILD] Raspberry Pi Native")
 	include(cmakes/RASPI_NATIVE.cmake)
@@ -29,7 +31,7 @@ endif()
 # Create Main project
 add_executable(NumberDetector
 	main.cpp
-	# main_without_opencv.cpp
+	utils.cc
 )
 
 # For OpenCV
@@ -39,27 +41,30 @@ if(OpenCV_FOUND)
 	target_link_libraries(NumberDetector ${OpenCV_LIBS})
 endif()
 
-# For Tensorflow Lite
-if((${BUILD_TARGET} STREQUAL PC) AND UNIX)
-	# use shared library
-	# target_link_libraries(NumberDetector ${CMAKE_SOURCE_DIR}/external_libs/tensorflow_prebuilt/linux-cpu-x86_64/libtensorflowlite.so)
-	# file(COPY ${CMAKE_SOURCE_DIR}/external_libs/tensorflow_prebuilt/linux-cpu-x86_64/libtensorflowlite.so DESTINATION ${PROJECT_BINARY_DIR}/)
-	# use static library
-	target_link_libraries(NumberDetector ${CMAKE_SOURCE_DIR}/external_libs/tensorflow_prebuilt_static/linux-cpu-x86_64/libtensorflow-lite.a)
-elseif((${BUILD_TARGET} STREQUAL RASPI_NATIVE) OR (${BUILD_TARGET} STREQUAL RASPI_CROSS))
+# For Tensorflow Lite and Edge TPU
+if((${BUILD_TARGET} STREQUAL RASPI_NATIVE) OR (${BUILD_TARGET} STREQUAL RASPI_CROSS))
+	target_link_libraries(NumberDetector ${CMAKE_SOURCE_DIR}/external_libs/edgetpu-native/libedgetpu/libedgetpu_arm32.so)
+	target_link_libraries(NumberDetector /usr/lib/arm-linux-gnueabihf/libc++.a)
+	target_link_libraries(NumberDetector /usr/lib/arm-linux-gnueabihf/libc++abi.a)
+	target_link_libraries(NumberDetector unwind)
 	target_link_libraries(NumberDetector ${CMAKE_SOURCE_DIR}/external_libs/tensorflow_prebuilt_static/rpi_armv7l/libtensorflow-lite.a)
+elseif(${BUILD_TARGET} STREQUAL JETSON_NATIVE)
+	target_link_libraries(NumberDetector ${CMAKE_SOURCE_DIR}/external_libs/edgetpu-native/libedgetpu/libedgetpu_arm64.so)
+	target_link_libraries(NumberDetector ${CMAKE_SOURCE_DIR}/external_libs/tensorflow_prebuilt_static/aarch64/libtensorflow-lite.a)
 else()
 	message(FATAL_ERROR "[BUILD] Invalid target")
 endif()
-target_include_directories(NumberDetector PUBLIC ${CMAKE_SOURCE_DIR}/external_libs/tensorflow/)
-target_include_directories(NumberDetector PUBLIC ${CMAKE_SOURCE_DIR}/external_libs/tensorflow/tensorflow)
-target_include_directories(NumberDetector PUBLIC ${CMAKE_SOURCE_DIR}/external_libs/tensorflow/tensorflow/lite/tools/make/downloads)
-target_include_directories(NumberDetector PUBLIC ${CMAKE_SOURCE_DIR}/external_libs/tensorflow/tensorflow/lite/tools/make/downloads/eigen )
-target_include_directories(NumberDetector PUBLIC ${CMAKE_SOURCE_DIR}/external_libs/tensorflow/tensorflow/lite/tools/make/downloads/absl)
-target_include_directories(NumberDetector PUBLIC ${CMAKE_SOURCE_DIR}/external_libs/tensorflow/tensorflow/lite/tools/make/downloads/gemmlowp)
-target_include_directories(NumberDetector PUBLIC ${CMAKE_SOURCE_DIR}/external_libs/tensorflow/tensorlow/lite/tools/make/downloads/neon_2_sse)
-target_include_directories(NumberDetector PUBLIC ${CMAKE_SOURCE_DIR}/external_libs/tensorflow/tensorflow/lite/tools/make/downloads/farmhash/src)
-target_include_directories(NumberDetector PUBLIC ${CMAKE_SOURCE_DIR}/external_libs/tensorflow/tensorflow/lite/tools/make/downloads/flatbuffers/include)
+
+target_include_directories(NumberDetector PUBLIC ${CMAKE_SOURCE_DIR}/external_libs/edgetpu-native/libedgetpu/)
+target_include_directories(NumberDetector PUBLIC ${CMAKE_SOURCE_DIR}/external_libs/edgetpu-native/tensorflow/)
+# target_include_directories(NumberDetector PUBLIC ${CMAKE_SOURCE_DIR}/external_libs/edgetpu-native/tensorflow/tensorflow)
+# target_include_directories(NumberDetector PUBLIC ${CMAKE_SOURCE_DIR}/external_libs/edgetpu-native/tensorflow/tensorflow/lite/tools/make/downloads)
+# target_include_directories(NumberDetector PUBLIC ${CMAKE_SOURCE_DIR}/external_libs/edgetpu-native/tensorflow/tensorflow/lite/tools/make/downloads/eigen )
+# target_include_directories(NumberDetector PUBLIC ${CMAKE_SOURCE_DIR}/external_libs/edgetpu-native/tensorflow/tensorflow/lite/tools/make/downloads/absl)
+# target_include_directories(NumberDetector PUBLIC ${CMAKE_SOURCE_DIR}/external_libs/edgetpu-native/tensorflow/tensorflow/lite/tools/make/downloads/gemmlowp)
+# target_include_directories(NumberDetector PUBLIC ${CMAKE_SOURCE_DIR}/external_libs/edgetpu-native/tensorflow/tensorlow/lite/tools/make/downloads/neon_2_sse)
+# target_include_directories(NumberDetector PUBLIC ${CMAKE_SOURCE_DIR}/external_libs/edgetpu-native/tensorflow/tensorflow/lite/tools/make/downloads/farmhash/src)
+target_include_directories(NumberDetector PUBLIC ${CMAKE_SOURCE_DIR}/external_libs/edgetpu-native/tensorflow/tensorflow/lite/tools/make/downloads/flatbuffers/include)
 
 # Copy resouce
 file(COPY ${CMAKE_SOURCE_DIR}/resource/ DESTINATION ${PROJECT_BINARY_DIR}/resource/)

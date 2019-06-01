@@ -1,3 +1,7 @@
 [submodule "05_TensorflowLite_C/external_libs/tensorflow"]
 	path = 05_TensorflowLite_CPP/external_libs/tensorflow
 	url = https://github.com/tensorflow/tensorflow
+[submodule "08_TensorflowLite_TPU_CPP/external_libs/edgetpu-native"]
+	path = 08_TensorflowLite_TPU_CPP/external_libs/edgetpu-native
+	url = https://coral.googlesource.com/edgetpu-native
+
